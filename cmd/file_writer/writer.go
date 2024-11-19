@@ -25,7 +25,7 @@ func WriteRandomFiles(directory string, stop <-chan struct{}) {
 			}
 
 			fmt.Printf("Wrote file %s\n", filename)
-			time.Sleep(1 * time.Second) // for the 1 second in the task
+			time.Sleep(Interval * time.Second) // for the 1 second in the task
 		}
 
 	}
