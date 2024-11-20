@@ -17,6 +17,7 @@ func main() {
 		return
 	}
 
+	// if not exist, create the dir
 	if _, err := os.Stat(p); os.IsNotExist(err) {
 		fmt.Printf("Directory %s does not exsit. Creating...\n", p)
 		if err := os.MkdirAll(p, 0755); err != nil {
@@ -25,6 +26,7 @@ func main() {
 		}
 	}
 
+	// graceful shutdown
 	stop := make(chan struct{})
 	go func() {
 		signalChan := make(chan os.Signal, 1)
@@ -34,6 +36,7 @@ func main() {
 		close(stop)
 	}()
 
+	// start concurrent file writing
 	var wg sync.WaitGroup
 	for i := 0; i < r; i++ {
 		wg.Add(1)

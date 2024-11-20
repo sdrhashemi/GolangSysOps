@@ -11,11 +11,6 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-func closeWatcher(watcher *fsnotify.Watcher) {
-	if err := watcher.Close(); err != nil {
-		fmt.Printf("Error closing watcher: %v\n", err)
-	}
-}
 func main() {
 
 	dir := os.Args[1]
@@ -54,11 +49,11 @@ func main() {
 				return
 			}
 
-			// enable create and writes events
+			// enable create and writes events for our fsnotify
 			if event.Op&fsnotify.Create == fsnotify.Create || event.Op&fsnotify.Write == fsnotify.Write {
 				ProcessEvent(event)
 			}
-
+		// handling watcher errors
 		case err, ok := <-watcher.Errors:
 			if !ok {
 				fmt.Println("Watcher errors channel closed")
@@ -66,9 +61,17 @@ func main() {
 			}
 			fmt.Printf("Watcher error: %v\n", err)
 
+		// waiting to shutdown signal
 		case <-sigChan:
 			fmt.Println("shutting down...")
 			return
 		}
+	}
+}
+
+// function for closing the watcher at shutdown
+func closeWatcher(watcher *fsnotify.Watcher) {
+	if err := watcher.Close(); err != nil {
+		fmt.Printf("Error closing watcher: %v\n", err)
 	}
 }
